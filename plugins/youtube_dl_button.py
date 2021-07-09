@@ -214,13 +214,10 @@ async def youtube_dl_call_back(bot, update):
                     if metadata.has("duration"):
                         duration = metadata.get('duration').seconds
 
-            if os.path.exists(thumb_image_path) or Config.DEF_THUMB_NAIL_VID_S:
+            if os.path.exists(thumb_image_path):
+                metadata = extractMetadata(createParser(thumb_image_path))
                 width = 0
                 height = 0
-                if os.path.exists(thumb_image_path):
-                    metadata = extractMetadata(createParser(thumb_image_path))
-                else:
-                    metadata = Config.DEF_THUMB_NAIL_VID_S
                 if metadata.has("width"):
                     width = metadata.get("width")
                 if metadata.has("height"):
@@ -236,7 +233,7 @@ async def youtube_dl_call_back(bot, update):
                     img.resize((90, height))
                 img.save(thumb_image_path, "JPEG")
             else:
-                thumb_image_path = None
+                thumb_image_path = Config.DEF_THUMB_NAIL_VID_S
 
             start_time = time.time()
             if tg_send_type == "audio":
@@ -276,8 +273,7 @@ async def youtube_dl_call_back(bot, update):
                     )
                 )
             elif tg_send_type == "vm":
-                await update.message.reply_to_message.reply_chat_action("upload_video_note")
-                
+                await update.message.reply_to_message.reply_chat_action("upload_video_note")                
                 await bot.send_video_note(
                     chat_id=update.message.chat.id,
                     video_note=download_directory,
